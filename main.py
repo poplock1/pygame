@@ -63,17 +63,24 @@ carImage = pygame.image.load('pic.png')
 def car(x, y):
     gameDisplay.blit(carImage, (x,y))
 
-x = 50
+x = 400
 y = 50
+vel = 5
 
 run = True
 
 while run:
-    pygame.time.delay(100)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
+    
+    keys = pygame.key.get_pressed()
+
+    if keys[pygame.K_LEFT]:
+        x -= vel
+    if keys[pygame.K_RIGHT]:
+        x += vel
 
     gameDisplay.fill((255,255,255))
     car(x,y)
