@@ -30,9 +30,9 @@ class player(object):
         self.y = y
         self.width = width
         self.height = height
-        self.vel = 5
+        self.vel = 12
         self.isJumping = False
-        self.jumpCount = 10
+        self.jumpCount = 11
         self.left = False
         self.right = False
         self.walkCount = 0
