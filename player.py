@@ -25,11 +25,12 @@ stand_still = pygame.image.load("player_sprite/p1_front.png")
 
 class player(object):
 
-    def __init__(self, x, y, width, height):
+    def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
         self.x = x
         self.y = y
-        self.width = width
-        self.height = height
+        self.image = stand_still
+        self.rect = self.image.get_rect(topleft=(self.x, self.y))
         self.vel = 12
         self.isJumping = False
         self.jumpCount = 11
@@ -37,20 +38,29 @@ class player(object):
         self.right = False
         self.walkCount = 0
 
-    def draw(self, gameDisplay):
+    def draw(self, game_display):
         if self.walkCount + 1 >= 33:
             self.walkCount = 0
         if self.right:
             if self.isJumping:
-                gameDisplay.blit(jumpRight, (self.x, self.y))
+                game_display.blit(jumpRight, (self.x, self.y))
             else:
-                gameDisplay.blit(walkRight[self.walkCount//3], (self.x, self.y))
+                game_display.blit(walkRight[self.walkCount//3], (self.x, self.y))
                 self.walkCount += 1
         elif self.left:
             if self.isJumping:
-                gameDisplay.blit(jumpLeft, (self.x, self.y))
+                game_display.blit(jumpLeft, (self.x, self.y))
             else:
-                gameDisplay.blit(walkLeft[self.walkCount//3], (self.x, self.y))
+                game_display.blit(walkLeft[self.walkCount//3], (self.x, self.y))
                 self.walkCount += 1
         else:
-            gameDisplay.blit(stand_still, (self.x, self.y))
+            game_display.blit(stand_still, (self.x, self.y))
+        self.rect = self.image.get_rect(topleft=(self.x, self.y))
+        pygame.draw.rect(game_display, (255, 0, 0), self.rect, 2)
+
+    # def collision_below(self, y, blocks):
+    #     for block in blocks:
+    #         if self.y > block.y and self.x in range(block.x, stop=block.x_range):
+    #             self.y = block.y
+    #         else:
+    #             self.y = y
