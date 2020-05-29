@@ -14,6 +14,15 @@ class Game:
         self.running = True
 
     def new_game(self):
+        self.all_sprites = pygame.sprite.Group()
+        self.player = player(self)
+        self.all_sprites.add(self.player)
+        self.blocks = pygame.sprite.Group()
+        b1 = block(0, 680, 800, 20, stg.block_img)
+        b2 = block(20, 480, 60, 20, stg.block_img)
+        self.all_sprites.add(b1, b2)
+        self.blocks.add(b1, b2)
+        self.all_sprites.add(self.blocks)
         self.run()
 
     def run(self):
@@ -21,8 +30,8 @@ class Game:
         while self.playing:
             self.clock.tick(stg.FPS)
             self.events()
-            self.update(player)
-            self.draw(player, blocks)
+            self.update()
+            self.draw()
 
     def events(self):
         for event in pygame.event.get():
@@ -30,20 +39,27 @@ class Game:
                 if self.playing:
                     self.playing = False
                 self.running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    self.player.jump()
 
         self.keys = pygame.key.get_pressed()
 
         if self.keys[pygame.K_ESCAPE] and self.playing:
             self.playing = False
+            self.running = False
 
-    def update(self, player):
-        player.update()
+    def update(self):
+        self.all_sprites.update()
+        if self.player.vel.y > 0:
+            collision = pygame.sprite.spritecollide(self.player, self.blocks, False)
+            if collision:
+                self.player.pos.y = collision[0].rect.top
+                self.player.vel.y = 0
 
-    def draw(self, player, blocks):
+    def draw(self):
         self.game_display.fill((150, 150, 140))
-        for element in blocks:
-            element.draw(self.game_display)
-        player.draw(self.game_display)
+        self.all_sprites.draw(self.game_display)
         pygame.display.flip()
 
     def start_screen(self):
@@ -56,8 +72,6 @@ class Game:
 game = Game()
 game.start_screen()
 while game.running:
-    player = player(400, 600)
-    blocks = [block(200, 500, stg.block_img), block(300, 500, stg.block_img)]
     game.new_game()
     game.game_over_screen()
 
