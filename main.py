@@ -10,6 +10,10 @@ class Game:
         pygame.init()
         self.game_display = pygame.display.set_mode((stg.display_width, stg.display_heigh))
         pygame.display.set_caption("Platform")
+        self.game_display_rect = self.game_display.get_rect()
+        self.view = self.game_display.get_rect()
+        self.level = pygame.Surface((stg.level_width, stg.level_heigh)).convert()
+        self.level_rect = self.level.get_rect()
         self.clock = pygame.time.Clock()
         self.running = True
 
@@ -24,7 +28,7 @@ class Game:
         self.blocks.add(b1, b2)
         self.all_sprites.add(self.blocks)
         self.run()
-
+ 
     def run(self):
         self.playing = True
         while self.playing:
@@ -54,13 +58,19 @@ class Game:
         if self.player.vel.y > 0:
             collision = pygame.sprite.spritecollide(self.player, self.blocks, False)
             if collision:
-                self.player.pos.y = collision[0].rect.top
+                self.player.pos.y = collision[0].rect.top + 1
                 self.player.vel.y = 0
+        self.update_view()
 
     def draw(self):
-        self.game_display.fill((150, 150, 140))
-        self.all_sprites.draw(self.game_display)
+        self.level.fill((150, 150, 140))
+        self.all_sprites.draw(self.level)
+        self.game_display.blit(self.level, (0,0), self.view)
         pygame.display.flip()
+
+    def update_view(self):
+        self.view.center = self.player.rect.center
+        self.view.clamp_ip(self.level_rect)
 
     def start_screen(self):
         pass
