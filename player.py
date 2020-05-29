@@ -1,6 +1,8 @@
 import pygame
 import settings as stg
 
+vec = pygame.math.Vector2
+
 walkRight = [pygame.image.load("player_sprite/p1_walk/PNG/p1_walk01.png"),
              pygame.image.load("player_sprite/p1_walk/PNG/p1_walk02.png"),
              pygame.image.load("player_sprite/p1_walk/PNG/p1_walk03.png"),
@@ -24,70 +26,69 @@ for element in walkRight:
 stand_still = pygame.image.load("player_sprite/p1_front.png")
 
 
-class player(object):
-
-    def __init__(self, x, y):
+class player(pygame.sprite.Sprite):
+    def __init__(self, game):
         pygame.sprite.Sprite.__init__(self)
-        self.x = x
-        self.y = y
         self.image = stand_still
-        self.rect = self.image.get_rect(topleft=(self.x, self.y))
-        self.vel = 12
-        self.isJumping = False
-        self.jumpCount = 11
+        self.rect = self.image.get_rect()
+        self.rect.center = (stg.display_width / 2, stg.display_heigh - 195)
+        self.pos = vec(stg.display_width / 2, stg.display_heigh - 195)
+        self.vel = vec(0, 0)
+        self.acc = vec(0, 0)
+        self.game = game
         self.left = False
         self.right = False
         self.walkCount = 0
 
-    def update(self):
-        self.keys = pygame.key.get_pressed()
+    def jump(self):
+        self.rect.x += 1
+        collision = pygame.sprite.spritecollide(self, self.game.blocks, False)
+        self.rect.x -= 1
+        if collision:
+            self.vel.y = -12
 
-        if self.keys[pygame.K_LEFT] and self.x > (self.rect.size[0]/2):
-            self.x -= self.vel
+    def update(self):
+        self.acc = vec(0, 0.5)
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_LEFT] and self.pos.x > (self.rect.size[0]/2):
+            self.acc.x = -stg.player_acc
             self.right = False
             self.left = True
-        elif self.keys[pygame.K_RIGHT] and self.x <= (stg.display_width - 3*(self.rect.size[0]/2)):
-            self.x += self.vel
+        elif keys[pygame.K_RIGHT] and self.pos.x <= (stg.display_width - 3*(self.rect.size[0]/2)):
+            self.acc.x = stg.player_acc
             self.right = True
             self.left = False
         else:
             self.right = False
             self.left = False
             self.walkCount = 0
+    
+        self.acc.x += self.vel.x * stg.player_friction
+        self.vel += self.acc
+        self.pos += self.vel + 0.5 * self.acc
 
-        if self.keys[pygame.K_SPACE]:
-            self.isJumping = True
+        self.rect.midbottom = self.pos
 
-        if self.isJumping:
-            neg = 1
-            if self.jumpCount >= -11:
-                if self.jumpCount < 0:
-                    neg = -1
-                self.y -= (self.jumpCount ** 2) * 0.5 * neg
-                self.jumpCount -= 1
-            else:
-                self.isJumping = False
-                self.jumpCount = 11
-
-    def draw(self, game_display):
-        if self.walkCount + 1 >= 33:
-            self.walkCount = 0
-        if self.right:
-            if self.isJumping:
-                game_display.blit(jumpRight, (self.x, self.y))
-            else:
-                game_display.blit(walkRight[self.walkCount//3], (self.x, self.y))
-                self.walkCount += 1
-        elif self.left:
-            if self.isJumping:
-                game_display.blit(jumpLeft, (self.x, self.y))
-            else:
-                game_display.blit(walkLeft[self.walkCount//3], (self.x, self.y))
-                self.walkCount += 1
-        else:
-            game_display.blit(stand_still, (self.x, self.y))
-        self.rect = self.image.get_rect(topleft=(self.x, self.y))
-        pygame.draw.rect(game_display, (255, 0, 0), self.rect, 2)
+    # def draw(self, game_display):
+    #     if self.walkCount + 1 >= 33:
+    #         self.walkCount = 0
+    #     if self.right:
+    #         if self.isJumping:
+    #             game_display.blit(jumpRight, (self.pos.x, self.pos.y))
+    #         else:
+    #             game_display.blit(walkRight[self.walkCount//3], (self.pos.x, self.pos.y))
+    #             self.walkCount += 1
+    #     elif self.left:
+    #         if self.isJumping:
+    #             game_display.blit(jumpLeft, (self.pos.x, self.pos.y))
+    #         else:
+    #             game_display.blit(walkLeft[self.walkCount//3], (self.pos.x, self.pos.y))
+    #             self.walkCount += 1
+    #     else:
+    #         game_display.blit(stand_still, (self.pos.x, self.pos.y))
+    #     self.rect = self.image.get_rect(topleft=(self.pos.x, self.pos.y))
+    #     pygame.draw.rect(game_display, (255, 0, 0), self.rect, 2)
 
     # def collision_below(self, y, blocks):
     #     for block in blocks:
