@@ -1,4 +1,5 @@
 import pygame
+import settings as stg
 
 walkRight = [pygame.image.load("player_sprite/p1_walk/PNG/p1_walk01.png"),
              pygame.image.load("player_sprite/p1_walk/PNG/p1_walk02.png"),
@@ -37,6 +38,36 @@ class player(object):
         self.left = False
         self.right = False
         self.walkCount = 0
+
+    def update(self):
+        self.keys = pygame.key.get_pressed()
+
+        if self.keys[pygame.K_LEFT] and self.x > (self.rect.size[0]/2):
+            self.x -= self.vel
+            self.right = False
+            self.left = True
+        elif self.keys[pygame.K_RIGHT] and self.x <= (stg.display_width - 3*(self.rect.size[0]/2)):
+            self.x += self.vel
+            self.right = True
+            self.left = False
+        else:
+            self.right = False
+            self.left = False
+            self.walkCount = 0
+
+        if self.keys[pygame.K_SPACE]:
+            self.isJumping = True
+
+        if self.isJumping:
+            neg = 1
+            if self.jumpCount >= -11:
+                if self.jumpCount < 0:
+                    neg = -1
+                self.y -= (self.jumpCount ** 2) * 0.5 * neg
+                self.jumpCount -= 1
+            else:
+                self.isJumping = False
+                self.jumpCount = 11
 
     def draw(self, game_display):
         if self.walkCount + 1 >= 33:
