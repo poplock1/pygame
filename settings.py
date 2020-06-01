@@ -2,6 +2,8 @@ import pygame
 # Game options
 display_width = 800
 display_heigh = 700
+level_width = 1200
+level_heigh = 700
 FPS = 60
 # Player properties
 player_acc = 1
