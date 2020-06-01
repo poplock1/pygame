@@ -1,44 +1,47 @@
 import pygame
 import settings as stg
+from os import path
 
 vec = pygame.math.Vector2
 
-walkRight = [pygame.image.load("player_sprite/p1_walk/PNG/p1_walk01.png"),
-             pygame.image.load("player_sprite/p1_walk/PNG/p1_walk02.png"),
-             pygame.image.load("player_sprite/p1_walk/PNG/p1_walk03.png"),
-             pygame.image.load("player_sprite/p1_walk/PNG/p1_walk04.png"),
-             pygame.image.load("player_sprite/p1_walk/PNG/p1_walk05.png"),
-             pygame.image.load("player_sprite/p1_walk/PNG/p1_walk06.png"),
-             pygame.image.load("player_sprite/p1_walk/PNG/p1_walk07.png"),
-             pygame.image.load("player_sprite/p1_walk/PNG/p1_walk08.png"),
-             pygame.image.load("player_sprite/p1_walk/PNG/p1_walk09.png"),
-             pygame.image.load("player_sprite/p1_walk/PNG/p1_walk10.png"),
-             pygame.image.load("player_sprite/p1_walk/PNG/p1_walk11.png")]
-jumpRight = pygame.image.load("player_sprite/p1_jump.png")
+# walkRight = [pygame.image.load("player_sprite/p1_walk/PNG/p1_walk01.png"),
+#              pygame.image.load("player_sprite/p1_walk/PNG/p1_walk02.png"),
+#              pygame.image.load("player_sprite/p1_walk/PNG/p1_walk03.png"),
+#              pygame.image.load("player_sprite/p1_walk/PNG/p1_walk04.png"),
+#              pygame.image.load("player_sprite/p1_walk/PNG/p1_walk05.png"),
+#              pygame.image.load("player_sprite/p1_walk/PNG/p1_walk06.png"),
+#              pygame.image.load("player_sprite/p1_walk/PNG/p1_walk07.png"),
+#              pygame.image.load("player_sprite/p1_walk/PNG/p1_walk08.png"),
+#              pygame.image.load("player_sprite/p1_walk/PNG/p1_walk09.png"),
+#              pygame.image.load("player_sprite/p1_walk/PNG/p1_walk10.png"),
+#              pygame.image.load("player_sprite/p1_walk/PNG/p1_walk11.png")]
+# jumpRight = pygame.image.load("player_sprite/p1_jump.png")
 
-walkLeft = []
-jumpLeft = pygame.transform.flip(pygame.image.load("player_sprite/p1_jump.png"), 1, 0)
+# walkLeft = []
+# jumpLeft = pygame.transform.flip(
+#     pygame.image.load("player_sprite/p1_jump.png"), 1, 0)
 
-for element in walkRight:
-    new_element = pygame.transform.flip(element, 1, 0)
-    walkLeft.append(new_element)
+# for element in walkRight:
+#     new_element = pygame.transform.flip(element, 1, 0)
+#     walkLeft.append(new_element)
+
 
 stand_still = pygame.image.load("player_sprite/p1_front.png")
 
 
-class player(pygame.sprite.Sprite):
-    def __init__(self, game):
+class Player(pygame.sprite.Sprite):
+    def __init__(self, x, y, width, height, game):
         pygame.sprite.Sprite.__init__(self)
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
         self.image = stand_still
-        self.rect = self.image.get_rect()
-        self.rect.center = (stg.display_width / 2, stg.display_heigh - 195)
-        self.pos = vec(stg.display_width / 2, stg.display_heigh - 195)
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.pos = vec(self.x, self.y)
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
         self.game = game
-        self.left = False
-        self.right = False
-        self.walkCount = 0
 
     def jump(self):
         self.rect.x += 1
@@ -48,29 +51,24 @@ class player(pygame.sprite.Sprite):
             self.vel.y = -12
 
     def update(self):
-        self.acc = vec(0, 0.5)
+        self.acc = vec(0, 0.2)
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_LEFT] and self.pos.x > (self.rect.size[0]/2):
             self.acc.x = -stg.player_acc
-            self.right = False
-            self.left = True
-        elif keys[pygame.K_RIGHT] and self.pos.x <= (stg.display_width - 3*(self.rect.size[0]/2)):
+        elif keys[pygame.K_RIGHT] and self.pos.x <= (self.game.map.width - 3*(self.rect.size[0]/2)):
             self.acc.x = stg.player_acc
-            self.right = True
-            self.left = False
-        else:
-            self.right = False
-            self.left = False
-            self.walkCount = 0
-    
+
         self.acc.x += self.vel.x * stg.player_friction
         self.vel += self.acc
         self.pos += self.vel + 0.5 * self.acc
 
-        self.rect.midbottom = self.pos
+        self.rect.bottomleft = self.pos
 
     # def draw(self, game_display):
+    #     self.game.game_display.blit(
+    #         self.image, (self.pos[0], self.pos[1] - self.height))
+    #     pygame.draw.rect(self.game.game_display, (255, 0, 0), self.rect, 2)
     #     if self.walkCount + 1 >= 33:
     #         self.walkCount = 0
     #     if self.right:
