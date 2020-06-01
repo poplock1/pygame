@@ -25,8 +25,9 @@ vec = pygame.math.Vector2
 #     new_element = pygame.transform.flip(element, 1, 0)
 #     walkLeft.append(new_element)
 
-
-stand_still = pygame.image.load("player_sprite/p1_front.png")
+game_path = path.dirname(__file__)
+stand_still = pygame.image.load(
+    path.join(game_path, 'player_sprite/p1_front.png'))
 
 
 class Player(pygame.sprite.Sprite):
