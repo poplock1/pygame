@@ -1,14 +1,10 @@
 import pygame
 
 
-block_img = pygame.image.load("grass.png")
-
-
 class block(pygame.sprite.Sprite):
 
     def __init__(self, x, y, width, height):
         pygame.sprite.Sprite.__init__(self)
-        self.image = block_img
         self.rect = pygame.Rect(x, y, width, height)
         self.rect.x = x
         self.rect.y = y
