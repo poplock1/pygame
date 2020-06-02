@@ -5,6 +5,8 @@ class block(pygame.sprite.Sprite):
 
     def __init__(self, x, y, width, height):
         pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface((width, height))
+        self.image.fill((0, 0, 0, 0))
         self.rect = pygame.Rect(x, y, width, height)
         self.rect.x = x
         self.rect.y = y

@@ -26,8 +26,8 @@ class Game:
         self.map_rect = self.map_img.get_rect()
 
     def new_game(self):
-        self.all_sprites = pygame.sprite.Group()
-        self.blocks = pygame.sprite.Group()
+        self.all_sprites = pygame.sprite.RenderUpdates()
+        self.blocks = pygame.sprite.RenderUpdates()
         for tile_object in self.map.tmxdata.objects:
             if tile_object.name == "Player":
                 self.player = Player(
@@ -71,14 +71,16 @@ class Game:
                 self.player, self.blocks, False)
             if collision:
                 self.player.vel.y = 0
+                self.player.isJumping = False
                 self.player.pos[1] = collision.rect.top + 1
         self.update_view()
 
     def draw(self):
-        self.map_img.blit(
-            self.player.image, (self.player.pos[0], self.player.pos[1] - self.player.height))
-        self.game_display.blit(self.map_img, (0, 0), self.view)
-        pygame.display.flip()
+        map_img = self.map_img
+        self.game_display.blit(
+            map_img, (0, 0), self.view)
+        self.player.draw(map_img)
+        pygame.display.update()
 
     def update_view(self):
         self.view.center = self.player.rect.center

@@ -20,6 +20,6 @@ class TiledMap:
                                             y * self.tmxdata.tileheight))
 
     def make_map(self):
-        surface = pygame.Surface((self.width, self.height))
+        surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
         self.render(surface)
         return surface
